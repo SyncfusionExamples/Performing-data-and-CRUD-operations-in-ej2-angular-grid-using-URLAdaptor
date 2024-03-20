@@ -92,16 +92,20 @@ namespace UrlAdaptor.Server.Controllers
         public void Update([FromBody] CRUDModel<OrdersDetails> Order)
         {
             var updatedOrder = Order.value;
-            var data = OrdersDetails.GetAllRecords().FirstOrDefault(or => or.OrderID == updatedOrder.OrderID);
-            if (data != null)
+            if (updatedOrder != null)
             {
-                // Update the existing record
-                data.OrderID = updatedOrder.OrderID;
-                data.CustomerID = updatedOrder.CustomerID;
-                data.ShipCity = updatedOrder.ShipCity;
-                data.ShipCountry = updatedOrder.ShipCountry;
-                // Update other properties similarly
+                var data = OrdersDetails.GetAllRecords().FirstOrDefault(or => or.OrderID == updatedOrder.OrderID);
+                if (data != null)
+                {
+                    // Update the existing record
+                    data.OrderID = updatedOrder.OrderID;
+                    data.CustomerID = updatedOrder.CustomerID;
+                    data.ShipCity = updatedOrder.ShipCity;
+                    data.ShipCountry = updatedOrder.ShipCountry;
+                    // Update other properties similarly
+                }
             }
+
         }
         /// <summary>
         /// Remove a specific data item from the data collection.
@@ -112,7 +116,7 @@ namespace UrlAdaptor.Server.Controllers
         [Route("api/Grid/Remove")]
         public void Remove([FromBody] CRUDModel<OrdersDetails> value)
         {
-            int orderId = int.Parse(value.key.ToString());
+            int orderId = int.Parse((value.key).ToString());
             var data = OrdersDetails.GetAllRecords().FirstOrDefault(orderData => orderData.OrderID == orderId);
             if (data != null)
             {
@@ -132,10 +136,15 @@ namespace UrlAdaptor.Server.Controllers
             if (request.action == "update")
             {
                 var orderValue = request.value;
-                OrdersDetails existingRecord = OrdersDetails.GetAllRecords().Where(or => or.OrderID == orderValue.OrderID).FirstOrDefault();
-                existingRecord.OrderID = orderValue.OrderID;
-                existingRecord.CustomerID = orderValue.CustomerID;
-                existingRecord.ShipCity = orderValue.ShipCity;
+                OrdersDetails existingRecord = OrdersDetails.GetAllRecords().FirstOrDefault(or => or.OrderID == orderValue.OrderID);
+
+                if (orderValue !=null && existingRecord !=null)
+                {
+                    existingRecord.OrderID = orderValue.OrderID;
+                    existingRecord.CustomerID = orderValue.CustomerID;
+                    existingRecord.ShipCity = orderValue.ShipCity;
+                }
+
             }
             else if (request.action == "insert")
             {
@@ -146,7 +155,7 @@ namespace UrlAdaptor.Server.Controllers
             }
             else if (request.action == "remove")
             {
-                OrdersDetails.GetAllRecords().Remove(OrdersDetails.GetAllRecords().Where(or => or.OrderID == int.Parse(request.key.ToString())).FirstOrDefault());
+                OrdersDetails.GetAllRecords().Remove(OrdersDetails.GetAllRecords().FirstOrDefault(or => or.OrderID == int.Parse(request.key.ToString())));
             }
             
         }
