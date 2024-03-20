@@ -133,6 +133,7 @@ namespace UrlAdaptor.Server.Controllers
         [Route("api/[controller]/CrudUpdate")]
         public void CrudUpdate([FromBody] CRUDModel<OrdersDetails> request)
         {
+            // Update record
             if (request.action == "update")
             {
                 var orderValue = request.value;
@@ -146,6 +147,7 @@ namespace UrlAdaptor.Server.Controllers
                 }
 
             }
+            // Insert record
             else if (request.action == "insert")
             {
                 if (request.value != null)
@@ -153,6 +155,7 @@ namespace UrlAdaptor.Server.Controllers
                    OrdersDetails.GetAllRecords().Insert(0, request.value);
                 }
             }
+            // Delete record
             else if (request.action == "remove")
             {
                 OrdersDetails.GetAllRecords().Remove(OrdersDetails.GetAllRecords().FirstOrDefault(or => or.OrderID == int.Parse(request.key.ToString())));
