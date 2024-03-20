@@ -14,14 +14,14 @@ namespace UrlAdaptor.Server.Controllers
         public object Post([FromBody] DataManagerRequest DataManagerRequest)
         {
             // Retrieve data from the data source (e.g., database)
-            IEnumerable<OrdersDetails> DataSource = GetOrderData();
+            IQueryable<OrdersDetails> DataSource = GetOrderData().AsQueryable();
 
-            DataOperations operation = new DataOperations(); // Initialize DataOperations instance
+            QueryableOperation queryableOperation = new QueryableOperation(); // Initialize DataOperations instance
 
             // Handling searching operation
             if (DataManagerRequest.Search != null && DataManagerRequest.Search.Count > 0)
             {
-                DataSource = operation.PerformSearching(DataSource, DataManagerRequest.Search);
+                DataSource = queryableOperation.PerformSearching(DataSource, DataManagerRequest.Search);
             }
 
             // Handling filtering operation
@@ -31,7 +31,7 @@ namespace UrlAdaptor.Server.Controllers
                 {
                     foreach (var predicate in condition.predicates)
                     {
-                        DataSource = operation.PerformFiltering(DataSource, DataManagerRequest.Where, predicate.Operator);
+                        DataSource = queryableOperation.PerformFiltering(DataSource, DataManagerRequest.Where, predicate.Operator);
                     }
                 }
             }
@@ -39,7 +39,7 @@ namespace UrlAdaptor.Server.Controllers
             // Handling sorting operation
             if (DataManagerRequest.Sorted != null && DataManagerRequest.Sorted.Count > 0)
             {
-                DataSource = operation.PerformSorting(DataSource, DataManagerRequest.Sorted);
+                DataSource = queryableOperation.PerformSorting(DataSource, DataManagerRequest.Sorted);
             }
 
             // Get the total count of records
@@ -48,11 +48,11 @@ namespace UrlAdaptor.Server.Controllers
             // Handling paging operation.
             if (DataManagerRequest.Skip != 0)
             {
-                DataSource = operation.PerformSkip(DataSource, DataManagerRequest.Skip);
+                DataSource = queryableOperation.PerformSkip(DataSource, DataManagerRequest.Skip);
             }
             if (DataManagerRequest.Take != 0)
             {
-                DataSource = operation.PerformTake(DataSource, DataManagerRequest.Take);
+                DataSource = queryableOperation.PerformTake(DataSource, DataManagerRequest.Take);
             }
 
             // Return data based on the request
