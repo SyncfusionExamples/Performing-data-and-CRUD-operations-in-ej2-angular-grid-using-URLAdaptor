@@ -1,8 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Syncfusion.EJ2.Base;
 using UrlAdaptor.Server.Models;
-
+using Syncfusion.EJ2.Base;
 
 namespace UrlAdaptor.Server.Controllers
 {
@@ -16,9 +15,10 @@ namespace UrlAdaptor.Server.Controllers
             // Retrieve data from the data source (e.g., database)
             IQueryable<OrdersDetails> DataSource = GetOrderData().AsQueryable();
 
-            QueryableOperation queryableOperation = new QueryableOperation(); // Initialize DataOperations instance
+            QueryableOperation queryableOperation = new QueryableOperation(); // Initialize QueryableOperation instance
 
-            // Handling searching operation
+
+            // Handling Searching operation
             if (DataManagerRequest.Search != null && DataManagerRequest.Search.Count > 0)
             {
                 DataSource = queryableOperation.PerformSearching(DataSource, DataManagerRequest.Search);
@@ -36,7 +36,7 @@ namespace UrlAdaptor.Server.Controllers
                 }
             }
 
-            // Handling sorting operation
+            // Handling Sorting operation
             if (DataManagerRequest.Sorted != null && DataManagerRequest.Sorted.Count > 0)
             {
                 DataSource = queryableOperation.PerformSorting(DataSource, DataManagerRequest.Sorted);
@@ -48,13 +48,13 @@ namespace UrlAdaptor.Server.Controllers
             // Handling paging operation.
             if (DataManagerRequest.Skip != 0)
             {
+                // Paging
                 DataSource = queryableOperation.PerformSkip(DataSource, DataManagerRequest.Skip);
             }
             if (DataManagerRequest.Take != 0)
             {
                 DataSource = queryableOperation.PerformTake(DataSource, DataManagerRequest.Take);
             }
-
             // Return data based on the request
             return new { result = DataSource, count = totalRecordsCount };
         }
@@ -78,7 +78,7 @@ namespace UrlAdaptor.Server.Controllers
         {
             if (newRecord.value != null)
             {
-               OrdersDetails.GetAllRecords().Insert(0, newRecord.value);
+                OrdersDetails.GetAllRecords().Insert(0, newRecord.value);
             }
         }
 
@@ -105,8 +105,8 @@ namespace UrlAdaptor.Server.Controllers
                     // Update other properties similarly
                 }
             }
-
         }
+
         /// <summary>
         /// Remove a specific data item from the data collection.
         /// </summary>
@@ -116,7 +116,7 @@ namespace UrlAdaptor.Server.Controllers
         [Route("api/Grid/Remove")]
         public void Remove([FromBody] CRUDModel<OrdersDetails> value)
         {
-            int orderId = int.Parse((value.key).ToString());
+            int orderId = int.Parse(value.key.ToString());
             var data = OrdersDetails.GetAllRecords().FirstOrDefault(orderData => orderData.OrderID == orderId);
             if (data != null)
             {
@@ -125,62 +125,24 @@ namespace UrlAdaptor.Server.Controllers
             }
         }
 
-        /// <summary>
-        /// Perform all the CRUD operation at server-side using a single method instead of specifying separate controller action method for CRUD (insert, update and delete) operations.
-        /// </summary>
-        /// <param name="request"></param>
-        [HttpPost]
-        [Route("api/[controller]/CrudUpdate")]
-        public void CrudUpdate([FromBody] CRUDModel<OrdersDetails> request)
-        {
-            // Update record
-            if (request.action == "update")
-            {
-                var orderValue = request.value;
-                OrdersDetails existingRecord = OrdersDetails.GetAllRecords().FirstOrDefault(or => or.OrderID == orderValue.OrderID);
-
-                if (orderValue !=null && existingRecord !=null)
-                {
-                    existingRecord.OrderID = orderValue.OrderID;
-                    existingRecord.CustomerID = orderValue.CustomerID;
-                    existingRecord.ShipCity = orderValue.ShipCity;
-                }
-
-            }
-            // Insert record
-            else if (request.action == "insert")
-            {
-                if (request.value != null)
-                {
-                   OrdersDetails.GetAllRecords().Insert(0, request.value);
-                }
-            }
-            // Delete record
-            else if (request.action == "remove")
-            {
-                OrdersDetails.GetAllRecords().Remove(OrdersDetails.GetAllRecords().FirstOrDefault(or => or.OrderID == int.Parse(request.key.ToString())));
-            }
-            
-        }
-
 
         public class CRUDModel<T> where T : class
         {
 
             public string? action { get; set; }
-  
+
             public string? keyColumn { get; set; }
-        
+
             public object? key { get; set; }
-       
+
             public T? value { get; set; }
 
             public List<T>? added { get; set; }
-         
+
             public List<T>? changed { get; set; }
-     
+
             public List<T>? deleted { get; set; }
-          
+
             public IDictionary<string, object>? @params { get; set; }
         }
     }

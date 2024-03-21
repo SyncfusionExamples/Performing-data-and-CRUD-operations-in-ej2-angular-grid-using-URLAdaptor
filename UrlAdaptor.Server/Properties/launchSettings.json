@@ -9,18 +9,17 @@
         "ASPNETCORE_HOSTINGSTARTUPASSEMBLIES": "Microsoft.AspNetCore.SpaProxy"
       },
       "dotnetRunMessages": true,
-      "applicationUrl": "http://localhost:5147"
+      "applicationUrl": "http://localhost:5102"
     },
     "https": {
       "commandName": "Project",
-      "launchBrowser": true,
       "launchUrl": "swagger",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "ASPNETCORE_HOSTINGSTARTUPASSEMBLIES": "Microsoft.AspNetCore.SpaProxy"
       },
       "dotnetRunMessages": true,
-      "applicationUrl": "https://localhost:7233;http://localhost:5147"
+      "applicationUrl": "https://localhost:7018;http://localhost:5102"
     },
     "IIS Express": {
       "commandName": "IISExpress",
@@ -37,8 +36,8 @@
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iisExpress": {
-      "applicationUrl": "http://localhost:14359",
-      "sslPort": 44322
+      "applicationUrl": "http://localhost:63721",
+      "sslPort": 44363
     }
   }
 }

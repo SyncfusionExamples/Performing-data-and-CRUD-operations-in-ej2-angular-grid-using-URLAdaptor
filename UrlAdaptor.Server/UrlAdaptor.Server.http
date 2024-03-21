@@ -1,4 +1,4 @@
-@UrlAdaptor.Server_HostAddress = http://localhost:5147
+@UrlAdaptor.Server_HostAddress = http://localhost:5102
 
 GET {{UrlAdaptor.Server_HostAddress}}/weatherforecast/
 Accept: application/json
