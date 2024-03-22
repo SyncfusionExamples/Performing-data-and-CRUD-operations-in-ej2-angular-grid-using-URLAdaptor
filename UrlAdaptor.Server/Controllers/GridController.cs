@@ -6,7 +6,7 @@ using Syncfusion.EJ2.Base;
 namespace UrlAdaptor.Server.Controllers
 {
     [ApiController]
-    public class GridController : ControllerBase
+    public class GridController : Controller
     {
         [HttpPost]
         [Route("api/[controller]")]
@@ -55,6 +55,7 @@ namespace UrlAdaptor.Server.Controllers
             {
                 DataSource = queryableOperation.PerformTake(DataSource, DataManagerRequest.Take);
             }
+
             // Return data based on the request
             return new { result = DataSource, count = totalRecordsCount };
         }
@@ -73,7 +74,7 @@ namespace UrlAdaptor.Server.Controllers
         /// <param name="newRecord">It contains the new record detail which is need to be inserted.</param>
         /// <returns>Returns void</returns>
         [HttpPost]
-        [Route("api/Grid/Insert")]
+        [Route("api/[controller]/Insert")]
         public void Insert([FromBody] CRUDModel<OrdersDetails> newRecord)
         {
             if (newRecord.value != null)
@@ -88,7 +89,7 @@ namespace UrlAdaptor.Server.Controllers
         /// <param name="Order">It contains the updated record detail which is need to be updated.</param>
         /// <returns>Returns void</returns>
         [HttpPost]
-        [Route("api/Grid/Update")]
+        [Route("api/[controller]/Update")]
         public void Update([FromBody] CRUDModel<OrdersDetails> Order)
         {
             var updatedOrder = Order.value;
@@ -113,7 +114,7 @@ namespace UrlAdaptor.Server.Controllers
         /// <param name="value">It contains the specific record detail which is need to be removed.</param>
         /// <return>Returns void</return>
         [HttpPost]
-        [Route("api/Grid/Remove")]
+        [Route("api/[controller]/Remove")]
         public void Remove([FromBody] CRUDModel<OrdersDetails> value)
         {
             int orderId = int.Parse(value.key.ToString());
@@ -123,6 +124,80 @@ namespace UrlAdaptor.Server.Controllers
                 // Remove the record from the data collection
                 OrdersDetails.GetAllRecords().Remove(data);
             }
+        }
+
+        /// <summary>
+        /// The code for handling CRUD action at single request using crudURL
+        /// </summary>
+        /// <param name="request">It contains the details of the record and action to be done</param>
+
+        [HttpPost]
+        [Route("api/[controller]/CrudUpdate")]
+        public void CrudUpdate([FromBody] CRUDModel<OrdersDetails> request)
+        {
+            // perform update operation
+            if (request.action == "update")
+            {
+                var orderValue = request.value;
+                OrdersDetails existingRecord = OrdersDetails.GetAllRecords().Where(or => or.OrderID == orderValue.OrderID).FirstOrDefault();
+                existingRecord.OrderID = orderValue.OrderID;
+                existingRecord.CustomerID = orderValue.CustomerID;
+                existingRecord.ShipCity = orderValue.ShipCity;
+            }
+            // perform insert operation
+            else if (request.action == "insert")
+            {
+                OrdersDetails.GetAllRecords().Insert(0, request.value);
+            }
+            // perform remove operation
+            else if (request.action == "remove")
+            {
+                OrdersDetails.GetAllRecords().Remove(OrdersDetails.GetAllRecords().Where(or => or.OrderID == int.Parse(request.key.ToString())).FirstOrDefault());
+            }
+        }
+
+        /// <summary>
+        /// The code for handling CRUD operation when enbaling batch editing
+        /// </summary>
+        /// <param name="batchmodel"></param>
+        /// <returns></returns>
+
+        [HttpPost]
+        [Route("api/[controller]/BatchUpdate")]
+        public IActionResult BatchUpdate([FromBody] CRUDModel<OrdersDetails> batchmodel)
+        {
+            if (batchmodel.added != null)
+            {
+                foreach (var addedOrder in batchmodel.added)
+                {
+                    OrdersDetails.GetAllRecords().Insert(0, addedOrder);
+                }
+            }
+            if (batchmodel.changed != null)
+            {
+                foreach (var changedOrder in batchmodel.changed)
+                {
+                    var existingOrder = OrdersDetails.GetAllRecords().FirstOrDefault(or => or.OrderID == changedOrder.OrderID);
+                    if (existingOrder != null)
+                    {
+                        existingOrder.CustomerID = changedOrder.CustomerID;
+                        existingOrder.ShipCity = changedOrder.ShipCity;
+                        // Update other properties as needed
+                    }
+                }
+            }
+            if (batchmodel.deleted != null)
+            {
+                foreach (var deletedOrder in batchmodel.deleted)
+                {
+                    var orderToDelete = OrdersDetails.GetAllRecords().FirstOrDefault(or => or.OrderID == deletedOrder.OrderID);
+                    if (orderToDelete != null)
+                    {
+                        OrdersDetails.GetAllRecords().Remove(orderToDelete);
+                    }
+                }
+            }
+            return Json(batchmodel);
         }
 
 
