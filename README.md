@@ -24,7 +24,7 @@ This repository contains two projects:
 Clone the repository and install dependencies for both projects:
 
 ```bash
-git clone https://your.git.repo/this-repo.git
+git clone https://github.com/SyncfusionExamples/Performing-data-and-CRUD-operations-in-ej2-angular-grid-using-URLAdaptor.git
 cd Performing-data-and-CRUD-operations-in-ej2-angular-grid-using-URLAdaptor
 
 # Install server dependencies (if any) and restore dotnet packages
